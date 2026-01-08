@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <h1>Voice Translator</h1>
+    </header>
+
+    <main>
+        <!-- Status & Controls -->
+        <div class="control-panel">
+            <div class="status-box">
+                <p id="status-text">Ready to Translate.</p>
+                <div id="result-box" class="hidden">
+                    <p class="lang-label">Detected:</p>
+                    <p id="spoken-text" class="result-text">...</p>
+                    
+                    <div class="divider"></div>
+                    
+                    <p class="lang-label target-lang">Translated:</p>
+                    <p id="translated-text" class="result-text">...</p>
+                </div>
+            </div>
+
+            <div class="language-select">
+                <label for="language">I am speaking:</label>
+                <select id="language">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                </select>
+            </div>
+
+            <button id="mic-btn" class="mic-btn">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <p class="hint">Tap microphone to speak</p>
+        </div>
+
+        <!-- History Section -->
+        <section class="history-section">
+            <div class="history-header">
+                <h2>History</h2>
+                <button id="delete-btn" class="delete-btn" title="Clear History">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div id="history-list" class="history-list">
+                <!-- History Items will populate here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const micBtn = document.getElementById('mic-btn');
+        const statusText = document.getElementById('status-text');
+        const resultBox = document.getElementById('result-box');
+        const spokenText = document.getElementById('spoken-text');
+        const translatedText = document.getElementById('translated-text');
+        const historyList = document.getElementById('history-list');
+        const deleteBtn = document.getElementById('delete-btn');
+        const langSelect = document.getElementById('language');
+
+        let isListening = false;
+
+        // Load History on Start
+        fetchHistory();
+
+        micBtn.addEventListener('click', async () => {
+            if (isListening) return;
+            isListening = true;
+            
+            // UI Update
+            micBtn.classList.add('listening');
+            statusText.innerText = "Listening... Speak now";
+            resultBox.classList.add('hidden');
+
+            const language = langSelect.value;
+            
+            try {
+                const response = await fetch('/api/process_voice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ language: language })
+                });
+                
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    statusText.innerText = "Translation Complete";
+                    spokenText.innerText = data.spoken;
+                    translatedText.innerText = (language === 'hi') 
+                        ? `English: ${data.english}` 
+                        : `Hindi: ${data.hindi}`;
+                    
+                    resultBox.classList.remove('hidden');
+                    fetchHistory(); // Refresh history
+                } else {
+                    statusText.innerText = data.message;
+                }
+            } catch (error) {
+                console.error(error);
+                statusText.innerText = "Error connecting to server.";
+            } finally {
+                micBtn.classList.remove('listening');
+                isListening = false;
+            }
+        });
+
+        deleteBtn.addEventListener('click', async () => {
+             if(confirm("Delete all history?")) {
+                 await fetch('/api/delete_history', { method: 'POST' });
+                 fetchHistory();
+             }
+        });
+
+        async function fetchHistory() {
+            const response = await fetch('/api/history');
+            const data = await response.json();
+            
+            historyList.innerHTML = '';
+            if (data.history.length === 0) {
+                historyList.innerHTML = '<p class="empty-msg">No history found.</p>';
+            } else {
+                data.history.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'history-card';
+                    card.innerHTML = `
+                        <div class="card-row">
+                            <span class="lang-tag hi">HI</span>
+                            <span class="text">${item.hindi}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="lang-tag en">EN</span>
+                            <span class="text">${item.english}</span>
+                        </div>
+                    `;
+                    historyList.appendChild(card);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
