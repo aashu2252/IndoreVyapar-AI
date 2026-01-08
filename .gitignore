@@ -10,6 +10,9 @@ venv/
 output.txt
 IndoreVyapar-AI/
 
+# Firebase service account key
+service_account.json
+
 # Miscellaneous
 *.class
 *.log

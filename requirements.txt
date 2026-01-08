@@ -1,3 +1,7 @@
 SpeechRecognition
-googletrans==4.0.0-rc1
-pyaudio
+deep-translator
+sounddevice
+numpy
+scipy
+Flask
+firebase-admin

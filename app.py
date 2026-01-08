@@ -1,34 +1,40 @@
 from flask import Flask, render_template, jsonify, request
 import speech_recognition as sr
-from googletrans import Translator
-import sqlite3
+from deep_translator import GoogleTranslator
 import os
+import sounddevice as sd
+import numpy as np
+import scipy.io.wavfile as wav
+import firebase_admin
+from firebase_admin import credentials, firestore
 
 app = Flask(__name__)
 
+# Initialize Firebase
+if not firebase_admin._apps:
+    try:
+        cred = credentials.Certificate("service_account.json")
+        firebase_admin.initialize_app(cred)
+        print("✅ Connected to Firebase Firestore")
+    except Exception as e:
+        print(f"❌ Firebase Connection Failed: {e}")
+
+def get_db():
+    try:
+        return firestore.client()
+    except:
+        return None
+
 # Initialize tools
 recognizer = sr.Recognizer()
-translator = Translator()
 
-def get_db_connection():
-    conn = sqlite3.connect("voice_data.db")
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db_connection()
-    conn.execute("""
-    CREATE TABLE IF NOT EXISTS voice_text (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        hindi TEXT,
-        english TEXT
-    )
-    """)
-    conn.commit()
-    conn.close()
-
-# Ensure DB is ready
-init_db()
+# Helper to record audio
+def record_audio(filename, duration=5, fs=44100):
+    print(f"Listening for {duration} seconds (Server Side)...")
+    recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
+    sd.wait()
+    wav.write(filename, fs, recording)
+    print("Recording finished.")
 
 @app.route('/')
 def home():
@@ -36,36 +42,40 @@ def home():
 
 @app.route('/api/process_voice', methods=['POST'])
 def process_voice():
+    temp_wav = "server_temp.wav"
     try:
         data = request.json
         lang_choice = data.get('language', 'en')
         
         # Capture Voice (Server-side)
-        with sr.Microphone() as source:
-            recognizer.adjust_for_ambient_noise(source, duration=0.2)
-            print("Listening...")
-            audio = recognizer.listen(source, timeout=10, phrase_time_limit=10)
+        record_audio(temp_wav, duration=5)
 
         # Speech to Text
+        with sr.AudioFile(temp_wav) as source:
+            audio = recognizer.record(source)
+            
         spoken_text = recognizer.recognize_google(audio, language=lang_choice)
         
         # Translate
         if lang_choice == 'hi':
             hindi_text = spoken_text
-            english_text = translator.translate(hindi_text, src='hi', dest='en').text
+            english_text = GoogleTranslator(source='hi', target='en').translate(hindi_text)
         else:
             english_text = spoken_text
-            hindi_text = translator.translate(english_text, src='en', dest='hi').text
+            hindi_text = GoogleTranslator(source='en', target='hi').translate(english_text)
 
-        # Save to DB
-        conn = get_db_connection()
-        conn.execute(
-            "INSERT INTO voice_text (hindi, english) VALUES (?, ?)",
-            (hindi_text, english_text)
-        )
-        conn.commit()
-        conn.close()
-
+        # Save to DB (Firestore)
+        db = get_db()
+        if db:
+            db.collection('transactions').add({
+                'hindi': hindi_text,
+                'english': english_text,
+                'summary_hindi': hindi_text,
+                'summary': english_text,
+                'timestamp': firestore.SERVER_TIMESTAMP,
+                'source': 'python_web'
+            })
+        
         # Save to file
         with open("output.txt", "a", encoding="utf-8") as f:
             f.write(f"Hindi: {hindi_text}\nEnglish: {english_text}\n\n")
@@ -83,29 +93,34 @@ def process_voice():
         return jsonify({'status': 'error', 'message': 'Could not understand audio.'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
+    finally:
+        if os.path.exists(temp_wav):
+            os.remove(temp_wav)
 
 @app.route('/api/history', methods=['GET'])
 def get_history():
     try:
-        conn = get_db_connection()
-        rows = conn.execute("SELECT * FROM voice_text ORDER BY id DESC").fetchall()
-        conn.close()
+        db = get_db()
+        if not db:
+             return jsonify({'status': 'error', 'message': 'Database not connected'})
+
+        docs = db.collection('transactions').order_by('timestamp', direction=firestore.Query.DESCENDING).get()
         
-        history = [{'id': row['id'], 'hindi': row['hindi'], 'english': row['english']} for row in rows]
+        history = []
+        for doc in docs:
+            data = doc.to_dict()
+            history.append({
+                'id': doc.id,
+                'hindi': data.get('hindi', data.get('summary_hindi')),
+                'english': data.get('english', data.get('summary'))
+            })
         return jsonify({'status': 'success', 'history': history})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
 @app.route('/api/delete_history', methods=['POST'])
 def delete_history_api():
-    try:
-        conn = get_db_connection()
-        conn.execute("DELETE FROM voice_text")
-        conn.commit()
-        conn.close()
-        return jsonify({'status': 'success', 'message': 'History deleted'})
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)})
+    return jsonify({'status': 'error', 'message': 'Delete Not Supported in Firestore Mode'})
 
 if __name__ == '__main__':
     app.run(debug=True)

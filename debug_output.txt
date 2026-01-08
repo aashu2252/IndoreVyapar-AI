@@ -1,0 +1,6 @@
+Starting checks...
+Flask failed: No module named 'flask'
+SpeechRecognition failed: No module named 'speech_recognition'
+googletrans failed: No module named 'googletrans'
+pyaudio failed: No module named 'pyaudio'
+Checks finished.
