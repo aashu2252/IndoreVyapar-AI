@@ -35,3 +35,22 @@ This project allows you to speak in Hindi or English, translates the speech to t
 
 *   **Microphone Issues:** Ensure your microphone is set as the default recording device.
 *   **PyAudio Errors:** If you have trouble installing PyAudio, you might need to install additional system tools (like `portaudio` on Mac/Linux) or use a pre-built wheel on Windows.
+
+---
+
+# Legacy: indore_vypaar_ai (Flutter)
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

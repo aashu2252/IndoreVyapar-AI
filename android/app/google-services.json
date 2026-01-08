@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "189770472674",
+    "project_id": "indore-vypaar-ai",
+    "storage_bucket": "indore-vypaar-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189770472674:android:3fa09065e5b2d0a9a452bb",
+        "android_client_info": {
+          "package_name": "com.example.indore_vypaar_ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDLOIUi_4zbhIYqghQudhWEVA8SRKcGx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
