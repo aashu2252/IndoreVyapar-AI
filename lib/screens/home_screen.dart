@@ -282,57 +282,61 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
       // 🎤 THE HERO INTERFACE (Bottom)
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Stack(
-        alignment: Alignment.center,
-        children: [
-          // 📷 CAMERA BUTTON (Small, Left)
-          Positioned(
-            left: 40,
-            bottom: 30,
-            child: FloatingActionButton(
+      floatingActionButton: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        width: double.infinity, 
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // 📷 CAMERA BUTTON (Left Side)
+            FloatingActionButton(
               heroTag: "cam_btn",
               backgroundColor: Colors.white24,
               elevation: 0,
               onPressed: _pickImage,
               child: const Icon(Icons.camera_alt, color: Colors.white),
             ),
-          ),
 
-          // 🎙️ BREATHING MIC CORE
-          GestureDetector(
-            onLongPress: _startListening,
-            onLongPressUp: _stopListening,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: _isListening
-                      ? [Colors.orangeAccent, Colors.deepOrange]
-                      : [Colors.indigoAccent, Colors.purpleAccent],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+            // 🎙️ BREATHING MIC CORE (Center)
+            GestureDetector(
+              onLongPress: _startListening,
+              onLongPressUp: _stopListening,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: _isListening
+                        ? [Colors.orangeAccent, Colors.deepOrange]
+                        : [Colors.indigoAccent, Colors.purpleAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _isListening ? Colors.orangeAccent.withOpacity(0.6) : Colors.indigoAccent.withOpacity(0.6),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      )
+                    ]
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _isListening ? Colors.orangeAccent.withOpacity(0.6) : Colors.indigoAccent.withOpacity(0.6),
-                      blurRadius: 30,
-                      spreadRadius: 5,
-                    )
-                  ]
-                ),
-                child: Icon(
-                  _isListening ? Icons.mic : Icons.mic_none,
-                  color: Colors.white,
-                  size: 35
+                  child: Icon(
+                    _isListening ? Icons.mic : Icons.mic_none,
+                    color: Colors.white,
+                    size: 35
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+
+            // 👻 EMPTY DUMMY BOX (Right Side Balance)
+            const SizedBox(width: 56, height: 56), // Matches FAB size
+          ],
+        ),
       ),
     );
   }
