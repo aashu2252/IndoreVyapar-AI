@@ -198,27 +198,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       appBar: AppBar(
         title: const Text("IndoreVyapar AI", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
         centerTitle: true,
-        backgroundColor: Colors.transparent, // Glass effect
+        backgroundColor: Colors.transparent, // Uses global scaffold color
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.indigo.shade900.withOpacity(0.8), Colors.purple.shade900.withOpacity(0.8)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          // 🌟 GLOBAL GRADIENT BACKGROUND
-          gradient: LinearGradient(
-            colors: [Colors.indigo.shade900, Colors.black],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        // Background controlled by main.dart theme (Color 0xFF101010)
         child: Column(
           children: [
             const SizedBox(height: 100), // Spacing for AppBar

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'screens/home_screen.dart';
 import 'screens/ledger_list_screen.dart';
 
@@ -18,7 +19,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'IndoreVyapar AI',
-      theme: ThemeData(primarySwatch: Colors.indigo),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: const Color(0xFF101010), // Midnight Professional
+        textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme).apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF101010),
+          elevation: 0,
+        ),
+      ),
       home: const MainScaffold(),
     );
   }

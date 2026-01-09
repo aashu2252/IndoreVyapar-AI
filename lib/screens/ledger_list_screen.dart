@@ -32,15 +32,6 @@ class LedgerListScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.indigo.shade900.withOpacity(0.9), Colors.purple.shade900.withOpacity(0.9)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.playlist_add, color: Colors.orangeAccent),
@@ -50,13 +41,7 @@ class LedgerListScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.indigo.shade900, Colors.black],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        // Background controlled by main.dart theme
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('transactions').snapshots(),
           builder: (context, snapshot) {
