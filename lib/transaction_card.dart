@@ -20,30 +20,28 @@ class TransactionCard extends StatelessWidget {
         ? DateFormat('dd MMM, hh:mm a').format(ts.toDate()) 
         : 'Just now';
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      elevation: 2,
+    // 3. Customer Name & Summary
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: color.withOpacity(0.2), // Slightly more visible
           child: Icon(
             isCredit ? Icons.arrow_upward : Icons.arrow_downward,
             color: color,
           ),
         ),
-        // 3. Customer Name & Summary
         title: Text(
           data['customer_name'] ?? 'Unknown Customer',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(data['summary_hindi'] ?? '...', maxLines: 1),
-            Text(dateStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(data['summary_hindi'] ?? '...', maxLines: 1, style: const TextStyle(color: Colors.white70)),
+            Text(dateStr, style: const TextStyle(fontSize: 12, color: Colors.white38)),
           ],
         ),
-        // 4. Amount
         trailing: Text(
           "₹${data['amount'] ?? 0}",
           style: TextStyle(
