@@ -1,1 +1,38 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"indore-vypaar-ai","appId":"1:189770472674:android:3fa09065e5b2d0a9a452bb","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"indore-vypaar-ai","configurations":{"android":"1:189770472674:android:3fa09065e5b2d0a9a452bb","macos":"1:189770472674:ios:62fb69d98b740a33a452bb","web":"1:189770472674:web:c177b8b417f2c758a452bb","windows":"1:189770472674:web:6ab1ef1a0df00956a452bb"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "indore-vypaar-ai",
+          "appId": "1:189770472674:android:3fa09065e5b2d0a9a452bb",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "indore-vypaar-ai",
+          "configurations": {
+            "android": "1:189770472674:android:3fa09065e5b2d0a9a452bb",
+            "macos": "1:189770472674:ios:62fb69d98b740a33a452bb",
+            "web": "1:189770472674:web:c177b8b417f2c758a452bb",
+            "windows": "1:189770472674:web:6ab1ef1a0df00956a452bb"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
