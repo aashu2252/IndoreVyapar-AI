@@ -66,6 +66,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     await _flutterTts.speak(text);
   }
 
+  void _toggleListening() {
+    if (_isListening) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+  }
+
   void _startListening() async {
     if (!_isProcessing) {
       await _speech.listen(onResult: (result) {
@@ -284,8 +292,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
             // 🎙️ BREATHING MIC CORE (Center)
             GestureDetector(
-              onLongPress: _startListening,
-              onLongPressUp: _stopListening,
+              onTap: _toggleListening,
               child: ScaleTransition(
                 scale: _scaleAnimation,
                 child: Container(
@@ -309,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ]
                   ),
                   child: Icon(
-                    _isListening ? Icons.mic : Icons.mic_none,
+                    _isListening ? Icons.stop : Icons.mic, // Changed icon to Stop when listening
                     color: Colors.white,
                     size: 35
                   ),
