@@ -32,6 +32,49 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     }
   }
 
+  Future<void> _confirmDelete(String docId) async {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: Text("Delete Transaction?", style: GoogleFonts.outfit(color: Colors.white)),
+        content: Text(
+          "Are you sure you want to delete this history item? This action cannot be undone.",
+          style: GoogleFonts.outfit(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx); // Close dialog
+              try {
+                await FirebaseFirestore.instance.collection('transactions').doc(docId).delete();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Transaction deleted successfully"),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error deleting: $e")),
+                  );
+                }
+              }
+            },
+            child: const Text("Delete", style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,7 +243,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                       // LIST ITEMS
                       ...dayDocs.map((doc) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: TransactionCard(data: doc.data() as Map<String, dynamic>),
+                        child: GestureDetector(
+                          onLongPress: () => _confirmDelete(doc.id),
+                          child: TransactionCard(data: doc.data() as Map<String, dynamic>),
+                        ),
                       )).toList(),
                     ],
                   );
