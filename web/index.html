@@ -40,13 +40,27 @@
 
 <body>
   <script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = null;
+  </script>
+  <script>
     window._flutter = {
       loader: {
         didCreateEngineInitializer: async (engineInitializer) => {
-          const appRunner = await engineInitializer.initializeEngine({
-            renderer: "html",
-          });
-          await appRunner.runApp();
+          try {
+            const config = {
+              renderer: "auto", // Allow Flutter to choose (HTML or CanvasKit)
+            };
+            if (serviceWorkerVersion) {
+              config.serviceWorker = {
+                serviceWorkerVersion: serviceWorkerVersion,
+              };
+            }
+            const appRunner = await engineInitializer.initializeEngine(config);
+            await appRunner.runApp();
+          } catch (e) {
+            console.error("Flutter initialization failed:", e);
+          }
         }
       }
     };
