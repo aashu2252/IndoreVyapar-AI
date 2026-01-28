@@ -2,6 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // 🔌 Enable Offline Persistence
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+  );
+
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: UltimateHomeScreen(),
+  ));
+}
 
 // --- THEME CONSTANTS ---
 const Color kBgDark = Color(0xFF0F172A); // Midnight Blue/Black
@@ -9,6 +30,9 @@ const Color kCardDark = Color(0xFF1E293B); // Lighter Card Color
 const Color kPrimary = Color(0xFF6366F1); // Indigo Neon
 const Color kAccent = Color(0xFFF43F5E); // Rose Neon for "Udhaar"
 const Color kSuccess = Color(0xFF10B981); // Emerald Neon for "Jama"
+
+const Color kCardGlass = Color(0xFF1E293B);
+const Color kNeonPrimary = Color(0xFF6366F1);
 
 class UltimateHomeScreen extends StatefulWidget {
   const UltimateHomeScreen({super.key});
@@ -85,7 +109,9 @@ class _UltimateHomeScreenState extends State<UltimateHomeScreen> with SingleTick
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: kPrimary.withOpacity(0.2),
-                blurRadius: 120,
+                boxShadow: [
+                  BoxShadow(blurRadius: 120, color: kPrimary.withOpacity(0.2)),
+                ],
               ),
             ),
           ),
@@ -98,7 +124,9 @@ class _UltimateHomeScreenState extends State<UltimateHomeScreen> with SingleTick
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: kAccent.withOpacity(0.15),
-                blurRadius: 100,
+                boxShadow: [
+                  BoxShadow(blurRadius: 100, color: kAccent.withOpacity(0.15)),
+                ],
               ),
             ),
           ),
@@ -129,7 +157,7 @@ class _UltimateHomeScreenState extends State<UltimateHomeScreen> with SingleTick
           ),
 
           // 3. The Ultimate Floating Mic Interface
-          _buildFloatingMicDock(),
+          _buildFloatingDock(),
         ],
       ),
     );
@@ -375,3 +403,4 @@ class _UltimateHomeScreenState extends State<UltimateHomeScreen> with SingleTick
       ),
     );
   }
+}
